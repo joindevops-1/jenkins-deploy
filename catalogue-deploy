@@ -117,7 +117,7 @@ pipeline {
                     # quick sanity: show length only (no secret leak)
                     echo "Webhook length: ${#SLACK_WEBHOOK}"
 
-                    payload=$(printf '{"text":"❌ Jenkins failed: %s #%s\\n%s"}' "$JOB_NAME" "$BUILD_NUMBER" "$BUILD_URL")
+                    payload=$(printf '{"text":"❌ Jenkins success: %s #%s\\n%s"}' "$JOB_NAME" "$BUILD_NUMBER" "$BUILD_URL")
 
                     curl -sS -X POST -H 'Content-type: application/json' \
                     --data "$payload" \
