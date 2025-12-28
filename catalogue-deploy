@@ -110,13 +110,27 @@ pipeline {
             deleteDir()
         }
         success { 
+            withCredentials([string(credentialsId: 'slack', variable: 'SLACK_WEBHOOK')]) {
+                sh '''
+                    set -euo pipefail
 
-                slackSend(
+                    # quick sanity: show length only (no secret leak)
+                    echo "Webhook length: ${#SLACK_WEBHOOK}"
+
+                    payload=$(printf '{"text":"❌ Jenkins failed: %s #%s\\n%s"}' "$JOB_NAME" "$BUILD_NUMBER" "$BUILD_URL")
+
+                    curl -sS -X POST -H 'Content-type: application/json' \
+                    --data "$payload" \
+                    "$SLACK_WEBHOOK"
+                '''
+            }
+
+                /* slackSend(
                     tokenCredentialId: 'slack',
                     channel: '#jenkins-alerts',
                     color: 'danger',
                     message: "❌ Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER} ${env.BUILD_URL}"
-                )
+                ) */
             }
         failure { 
             echo 'Hello Failure'
